@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300" role="img" aria-label="Portrait à venir">
+  <defs>
+    <radialGradient id="bg2" cx="50%" cy="38%" r="75%">
+      <stop offset="0%" stop-color="#f0f9ff"/>
+      <stop offset="100%" stop-color="#a9d6f0"/>
+    </radialGradient>
+  </defs>
+  <rect width="300" height="300" fill="url(#bg2)"/>
+  <g fill="#ffffff" opacity="0.92">
+    <circle cx="150" cy="120" r="52"/>
+    <path d="M52 300 C52 218 98 188 150 188 C202 188 248 218 248 300 Z"/>
+  </g>
+  <text x="150" y="285" text-anchor="middle" font-family="Georgia, serif" font-size="15" fill="#3d5a7a" opacity="0.7">Photo à venir</text>
+</svg>
