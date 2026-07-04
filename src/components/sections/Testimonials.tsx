@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Quote } from 'lucide-react'
+import { Quote, User } from 'lucide-react'
 import { Divider } from '@/components/ui/Divider'
 import { siteContent } from '@/content/site-content'
+import { fetchLiveTestimonials } from '@/lib/webhooks'
 
 const cardTransition = (index: number) => ({
   duration: 0.55,
@@ -15,9 +17,40 @@ const revealProps = {
   viewport: { once: true, margin: '-60px' },
 }
 
+type FamilyCard = {
+  author: string
+  relation: string
+  photoSrc: string | null
+  quote: string
+}
+
 export function Testimonials() {
-  const family = siteContent.testimonials.filter((t) => t.type === 'family')
+  const staticFamily: FamilyCard[] = siteContent.testimonials
+    .filter((t) => t.type === 'family')
+    .map((t) => ({ author: t.author, relation: t.relation, photoSrc: t.photoSrc, quote: t.quote }))
   const friends = siteContent.testimonials.filter((t) => t.type === 'friend')
+
+  const [liveFamily, setLiveFamily] = useState<FamilyCard[]>([])
+
+  useEffect(() => {
+    let cancelled = false
+    fetchLiveTestimonials().then((entries) => {
+      if (cancelled) return
+      setLiveFamily(
+        entries.map((entry) => ({
+          author: entry.authorName,
+          relation: 'Famille',
+          photoSrc: entry.photoUrl ?? null,
+          quote: entry.content,
+        })),
+      )
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const family = [...staticFamily, ...liveFamily]
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-cloud via-white to-cloud px-6 py-24">
@@ -35,18 +68,24 @@ export function Testimonials() {
         <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {family.map((testimonial, index) => (
             <motion.figure
-              key={testimonial.author}
+              key={`${testimonial.author}-${index}`}
               {...revealProps}
               whileHover={{ y: -6 }}
               transition={cardTransition(index)}
               className="flex flex-col items-center rounded-3xl border border-sky/25 bg-white p-8 text-center shadow-[0_14px_35px_-15px_rgba(2,132,199,0.4)] transition-shadow hover:shadow-[0_22px_50px_-15px_rgba(2,132,199,0.5)]"
             >
               <div className="relative">
-                <img
-                  src={testimonial.photoSrc ?? undefined}
-                  alt={testimonial.author}
-                  className="size-32 rounded-full border-4 border-white object-cover shadow-lg ring-2 ring-sky/30"
-                />
+                {testimonial.photoSrc ? (
+                  <img
+                    src={testimonial.photoSrc}
+                    alt={testimonial.author}
+                    className="size-32 rounded-full border-4 border-white object-cover shadow-lg ring-2 ring-sky/30"
+                  />
+                ) : (
+                  <div className="flex size-32 items-center justify-center rounded-full border-4 border-white bg-cloud shadow-lg ring-2 ring-sky/30">
+                    <User className="size-12 text-sky-deep/60" aria-hidden />
+                  </div>
+                )}
                 <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-sky-deep px-3 py-0.5 text-[10px] font-medium tracking-wide text-white uppercase shadow">
                   {testimonial.relation}
                 </span>

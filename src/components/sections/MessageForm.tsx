@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import {
   HeartHandshake,
   Lock,
+  Globe,
   MessageCircleHeart,
   Camera,
   Users,
@@ -13,7 +14,7 @@ import { SectionReveal } from '@/components/ui/SectionReveal'
 import { Divider } from '@/components/ui/Divider'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
-import { N8N_MESSAGE_WEBHOOK_URL, postToWebhook } from '@/lib/webhooks'
+import { N8N_MESSAGE_WEBHOOK_URL, fileToBase64, postToWebhook } from '@/lib/webhooks'
 
 type Step = 'choice' | 'family' | 'friend' | 'success'
 type MessageType = 'family' | 'friend'
@@ -27,6 +28,7 @@ const fade = {
 export function MessageForm() {
   const [open, setOpen] = useState(false)
   const [step, setStep] = useState<Step>('choice')
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -37,6 +39,7 @@ export function MessageForm() {
     // Laisse l'animation de fermeture se jouer avant de réinitialiser l'étape.
     setTimeout(() => {
       setStep('choice')
+      setPhotoFile(null)
       setPhotoPreview(null)
       setError(null)
     }, 250)
@@ -45,6 +48,7 @@ export function MessageForm() {
   function handlePhotoChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     if (!file) return
+    setPhotoFile(file)
     setPhotoPreview((previous) => {
       if (previous) URL.revokeObjectURL(previous)
       return URL.createObjectURL(file)
@@ -59,12 +63,21 @@ export function MessageForm() {
     const formData = new FormData(event.currentTarget)
 
     try {
-      await postToWebhook(N8N_MESSAGE_WEBHOOK_URL, {
+      const payload: Record<string, unknown> = {
         type,
         authorName: String(formData.get('authorName') ?? '').trim(),
         content: String(formData.get('content') ?? '').trim(),
         submittedAt: new Date().toISOString(),
-      })
+      }
+
+      // Seule la famille peut joindre une photo, et seule la famille est
+      // affichée publiquement dans les témoignages du site.
+      if (type === 'family' && photoFile) {
+        payload.photoBase64 = await fileToBase64(photoFile)
+        payload.photoMimeType = photoFile.type
+      }
+
+      await postToWebhook(N8N_MESSAGE_WEBHOOK_URL, payload)
       setStep('success')
     } catch {
       setError("Votre message n'a pas pu être envoyé. Veuillez réessayer.")
@@ -81,9 +94,9 @@ export function MessageForm() {
           Un mot pour la famille
         </h2>
         <Divider />
-        <p className="mt-4 flex items-center justify-center gap-2 text-sm text-ink-soft">
-          <Lock className="size-4 text-sky-deep" aria-hidden />
-          Ce message est privé et ne sera visible que par la famille.
+        <p className="mt-4 text-sm text-ink-soft">
+          Un mot de la famille (avec photo) rejoint les témoignages du site ; un mot
+          d'un(e) ami(e) reste privé, pour la famille seule.
         </p>
 
         <Button
@@ -142,6 +155,11 @@ export function MessageForm() {
               <h3 id="message-modal-title" className="font-serif text-2xl font-medium text-ink">
                 Un mot en tant que famille
               </h3>
+              <p className="mt-2 flex items-center gap-2 text-xs text-ink-soft">
+                <Globe className="size-3.5 shrink-0 text-sky-deep" aria-hidden />
+                Votre message et votre photo seront ajoutés publiquement à la section
+                Témoignages du site.
+              </p>
 
               <form onSubmit={(event) => handleSubmit('family', event)} className="mt-6 space-y-5 text-left">
                 <div className="flex items-center gap-4">
@@ -231,6 +249,10 @@ export function MessageForm() {
               <h3 id="message-modal-title" className="font-serif text-2xl font-medium text-ink">
                 Un mot en tant qu'ami(e)
               </h3>
+              <p className="mt-2 flex items-center gap-2 text-xs text-ink-soft">
+                <Lock className="size-3.5 shrink-0 text-sky-deep" aria-hidden />
+                Ce message reste privé et ne sera visible que par la famille.
+              </p>
 
               <form onSubmit={(event) => handleSubmit('friend', event)} className="mt-6 space-y-5 text-left">
                 <div>
