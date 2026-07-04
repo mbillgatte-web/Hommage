@@ -1,9 +1,10 @@
 import { useState, type FormEvent } from 'react'
-import { CheckCircle2 } from 'lucide-react'
+import { CheckCircle2, AlertCircle } from 'lucide-react'
 import { SectionReveal } from '@/components/ui/SectionReveal'
 import { Divider } from '@/components/ui/Divider'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/cn'
+import { N8N_RSVP_WEBHOOK_URL, postToWebhook } from '@/lib/webhooks'
 
 const statusOptions = [
   { value: 'YES', label: 'Je serai présent(e)' },
@@ -13,12 +14,32 @@ const statusOptions = [
 
 export function RsvpForm() {
   const [status, setStatus] = useState<(typeof statusOptions)[number]['value']>('YES')
+  const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    // Branchement au stockage prévu dans une prochaine étape.
-    setSubmitted(true)
+    setError(null)
+    setSubmitting(true)
+
+    const formData = new FormData(event.currentTarget)
+    const name = String(formData.get('name') ?? '').trim()
+    const guestCount = status === 'NO' ? 0 : Number(formData.get('guestCount') ?? 1)
+
+    try {
+      await postToWebhook(N8N_RSVP_WEBHOOK_URL, {
+        name,
+        status,
+        guestCount,
+        submittedAt: new Date().toISOString(),
+      })
+      setSubmitted(true)
+    } catch {
+      setError("Votre réponse n'a pas pu être envoyée. Veuillez réessayer.")
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -99,8 +120,15 @@ export function RsvpForm() {
                 </div>
               )}
 
-              <Button type="submit" className="w-full">
-                Confirmer ma réponse
+              {error && (
+                <p className="flex items-center gap-2 text-sm text-red-600" role="alert">
+                  <AlertCircle className="size-4 shrink-0" aria-hidden />
+                  {error}
+                </p>
+              )}
+
+              <Button type="submit" disabled={submitting} className="w-full">
+                {submitting ? 'Envoi en cours…' : 'Confirmer ma réponse'}
               </Button>
             </form>
           )}

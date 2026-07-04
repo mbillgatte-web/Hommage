@@ -1,12 +1,22 @@
 import { useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
-import { HeartHandshake, Lock, MessageCircleHeart, Camera, Users, ArrowLeft } from 'lucide-react'
+import {
+  HeartHandshake,
+  Lock,
+  MessageCircleHeart,
+  Camera,
+  Users,
+  ArrowLeft,
+  AlertCircle,
+} from 'lucide-react'
 import { SectionReveal } from '@/components/ui/SectionReveal'
 import { Divider } from '@/components/ui/Divider'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
+import { N8N_MESSAGE_WEBHOOK_URL, postToWebhook } from '@/lib/webhooks'
 
 type Step = 'choice' | 'family' | 'friend' | 'success'
+type MessageType = 'family' | 'friend'
 
 const fade = {
   initial: { opacity: 0, x: 12 },
@@ -18,6 +28,8 @@ export function MessageForm() {
   const [open, setOpen] = useState(false)
   const [step, setStep] = useState<Step>('choice')
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   function closeModal() {
@@ -26,6 +38,7 @@ export function MessageForm() {
     setTimeout(() => {
       setStep('choice')
       setPhotoPreview(null)
+      setError(null)
     }, 250)
   }
 
@@ -38,10 +51,26 @@ export function MessageForm() {
     })
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(type: MessageType, event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    // Branchement au stockage prévu dans une prochaine étape.
-    setStep('success')
+    setError(null)
+    setSubmitting(true)
+
+    const formData = new FormData(event.currentTarget)
+
+    try {
+      await postToWebhook(N8N_MESSAGE_WEBHOOK_URL, {
+        type,
+        authorName: String(formData.get('authorName') ?? '').trim(),
+        content: String(formData.get('content') ?? '').trim(),
+        submittedAt: new Date().toISOString(),
+      })
+      setStep('success')
+    } catch {
+      setError("Votre message n'a pas pu être envoyé. Veuillez réessayer.")
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -114,7 +143,7 @@ export function MessageForm() {
                 Un mot en tant que famille
               </h3>
 
-              <form onSubmit={handleSubmit} className="mt-6 space-y-5 text-left">
+              <form onSubmit={(event) => handleSubmit('family', event)} className="mt-6 space-y-5 text-left">
                 <div className="flex items-center gap-4">
                   <button
                     type="button"
@@ -176,8 +205,15 @@ export function MessageForm() {
                   />
                 </div>
 
-                <Button type="submit" className="w-full">
-                  Envoyer mon message
+                {error && (
+                  <p className="flex items-center gap-2 text-sm text-red-600" role="alert">
+                    <AlertCircle className="size-4 shrink-0" aria-hidden />
+                    {error}
+                  </p>
+                )}
+
+                <Button type="submit" disabled={submitting} className="w-full">
+                  {submitting ? 'Envoi en cours…' : 'Envoyer mon message'}
                 </Button>
               </form>
             </motion.div>
@@ -196,7 +232,7 @@ export function MessageForm() {
                 Un mot en tant qu'ami(e)
               </h3>
 
-              <form onSubmit={handleSubmit} className="mt-6 space-y-5 text-left">
+              <form onSubmit={(event) => handleSubmit('friend', event)} className="mt-6 space-y-5 text-left">
                 <div>
                   <label htmlFor="friend-name" className="block text-sm font-medium text-ink-soft">
                     Votre nom <span className="text-sky-deep">*</span>
@@ -227,8 +263,15 @@ export function MessageForm() {
                   />
                 </div>
 
-                <Button type="submit" className="w-full">
-                  Envoyer mon message
+                {error && (
+                  <p className="flex items-center gap-2 text-sm text-red-600" role="alert">
+                    <AlertCircle className="size-4 shrink-0" aria-hidden />
+                    {error}
+                  </p>
+                )}
+
+                <Button type="submit" disabled={submitting} className="w-full">
+                  {submitting ? 'Envoi en cours…' : 'Envoyer mon message'}
                 </Button>
               </form>
             </motion.div>
