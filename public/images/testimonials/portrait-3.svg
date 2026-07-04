@@ -1,14 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300" role="img" aria-label="Portrait à venir">
   <defs>
-    <radialGradient id="bg3" cx="50%" cy="38%" r="75%">
-      <stop offset="0%" stop-color="#eef7fe"/>
-      <stop offset="100%" stop-color="#c6e4f6"/>
-    </radialGradient>
+    <linearGradient id="bg3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d9edf9"/>
+      <stop offset="100%" stop-color="#98cbec"/>
+    </linearGradient>
+    <linearGradient id="fig3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e6f3fc"/>
+    </linearGradient>
   </defs>
   <rect width="300" height="300" fill="url(#bg3)"/>
-  <g fill="#ffffff" opacity="0.92">
-    <circle cx="150" cy="120" r="52"/>
-    <path d="M52 300 C52 218 98 188 150 188 C202 188 248 218 248 300 Z"/>
+  <g fill="url(#fig3)">
+    <circle cx="150" cy="115" r="55"/>
+    <path d="M48 300 C48 214 96 182 150 182 C204 182 252 214 252 300 Z"/>
   </g>
-  <text x="150" y="285" text-anchor="middle" font-family="Georgia, serif" font-size="15" fill="#3d5a7a" opacity="0.7">Photo à venir</text>
+  <g fill="none" stroke="#2f6f9e" stroke-width="3" opacity="0.55">
+    <circle cx="150" cy="115" r="55"/>
+    <path d="M48 300 C48 214 96 182 150 182 C204 182 252 214 252 300"/>
+  </g>
+  <rect x="90" y="212" width="120" height="28" rx="14" fill="#2f6f9e" opacity="0.9"/>
+  <text x="150" y="231" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#ffffff">Photo à venir</text>
 </svg>
