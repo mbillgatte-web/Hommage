@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { Quote, User } from 'lucide-react'
 import { Divider } from '@/components/ui/Divider'
 import { siteContent } from '@/content/site-content'
-import { fetchLiveTestimonials } from '@/lib/webhooks'
+import { buildDrivePhotoUrl, fetchLiveTestimonials } from '@/lib/webhooks'
 
 const cardTransition = (index: number) => ({
   duration: 0.55,
@@ -40,7 +40,7 @@ export function Testimonials() {
         entries.map((entry) => ({
           author: entry.authorName,
           relation: 'Famille',
-          photoSrc: entry.photoUrl ?? null,
+          photoSrc: buildDrivePhotoUrl(entry.photoUrl),
           quote: entry.content,
         })),
       )

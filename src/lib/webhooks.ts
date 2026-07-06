@@ -30,6 +30,21 @@ export type LiveTestimonial = {
   photoUrl?: string | null
 }
 
+/** n8n peut renvoyer soit l'identifiant brut du fichier Drive, soit une URL
+ * Drive complète (selon la configuration du workflow, pas toujours fiable à
+ * ajuster). On extrait l'identifiant dans tous les cas et on reconstruit
+ * systématiquement un lien au format "thumbnail", le seul qui s'affiche de
+ * façon fiable dans une balise <img> (le format "uc?export=view" est souvent
+ * bloqué pour l'intégration même quand le fichier est public). */
+export function buildDrivePhotoUrl(fileIdOrUrl: string | null | undefined): string | null {
+  if (!fileIdOrUrl) return null
+
+  const idMatch = fileIdOrUrl.match(/[-\w]{25,}/)
+  const fileId = idMatch ? idMatch[0] : fileIdOrUrl
+
+  return `https://lh3.googleusercontent.com/d/${fileId}=w1000`
+}
+
 /** Récupère les témoignages famille publiés dynamiquement. Échoue silencieusement
  * (page publique : on ne veut jamais afficher d'erreur aux visiteurs). */
 export async function fetchLiveTestimonials(): Promise<LiveTestimonial[]> {
