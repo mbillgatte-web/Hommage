@@ -19,13 +19,12 @@ export const siteContent = {
   gallery: {
     heading: 'Ses souvenirs en images',
     photos: [
-      { src: '/images/gallery/photo-1.svg', alt: 'Photo de Mama Odette 1' },
-      { src: '/images/gallery/photo-2.svg', alt: 'Photo de Mama Odette 2' },
-      { src: '/images/gallery/photo-3.svg', alt: 'Photo de Mama Odette 3' },
-      { src: '/images/gallery/photo-4.svg', alt: 'Photo de Mama Odette 4' },
-      { src: '/images/gallery/photo-5.svg', alt: 'Photo de Mama Odette 5' },
-      { src: '/images/gallery/photo-6.svg', alt: 'Photo de Mama Odette 6' },
-      { src: '/images/gallery/photo-7.svg', alt: 'Photo de Mama Odette 7' },
+      { src: '/images/gallery/photo-1.jpg', alt: 'Photo de Mama Odette 1' },
+      { src: '/images/gallery/photo-2.jpg', alt: 'Photo de Mama Odette 2' },
+      { src: '/images/gallery/photo-3.jpg', alt: 'Photo de Mama Odette 3' },
+      { src: '/images/gallery/photo-4.jpg', alt: 'Photo de Mama Odette 4' },
+      { src: '/images/gallery/photo-5.jpg', alt: 'Photo de Mama Odette 5' },
+      { src: '/images/gallery/photo-6.jpg', alt: 'Photo de Mama Odette 6' },
     ] as { src: string; alt: string }[],
   },
   // type 'family' (fils / petits-fils) : affiche la photo avec le message.
