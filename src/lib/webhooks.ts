@@ -25,6 +25,7 @@ export async function postToWebhook(url: string | undefined, payload: Record<str
 }
 
 export type LiveTestimonial = {
+  type?: 'family' | 'friend' | string
   authorName: string
   content: string
   photoUrl?: string | null

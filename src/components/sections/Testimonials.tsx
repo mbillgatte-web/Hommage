@@ -24,25 +24,40 @@ type FamilyCard = {
   quote: string
 }
 
+type FriendCard = {
+  author: string
+  quote: string
+}
+
 export function Testimonials() {
   const staticFamily: FamilyCard[] = siteContent.testimonials
     .filter((t) => t.type === 'family')
     .map((t) => ({ author: t.author, relation: t.relation, photoSrc: t.photoSrc, quote: t.quote }))
-  const friends = siteContent.testimonials.filter((t) => t.type === 'friend')
+  const staticFriends: FriendCard[] = siteContent.testimonials
+    .filter((t) => t.type === 'friend')
+    .map((t) => ({ author: t.author, quote: t.quote }))
 
   const [liveFamily, setLiveFamily] = useState<FamilyCard[]>([])
+  const [liveFriends, setLiveFriends] = useState<FriendCard[]>([])
 
   useEffect(() => {
     let cancelled = false
     fetchLiveTestimonials().then((entries) => {
       if (cancelled) return
       setLiveFamily(
-        entries.map((entry) => ({
-          author: entry.authorName,
-          relation: 'Famille',
-          photoSrc: buildDrivePhotoUrl(entry.photoUrl),
-          quote: entry.content,
-        })),
+        entries
+          .filter((entry) => entry.type !== 'friend')
+          .map((entry) => ({
+            author: entry.authorName,
+            relation: 'Famille',
+            photoSrc: buildDrivePhotoUrl(entry.photoUrl),
+            quote: entry.content,
+          })),
+      )
+      setLiveFriends(
+        entries
+          .filter((entry) => entry.type === 'friend')
+          .map((entry) => ({ author: entry.authorName, quote: entry.content })),
       )
     })
     return () => {
@@ -51,6 +66,7 @@ export function Testimonials() {
   }, [])
 
   const family = [...staticFamily, ...liveFamily]
+  const friends = [...staticFriends, ...liveFriends]
   const hasAnyTestimonial = family.length > 0 || friends.length > 0
 
   return (
@@ -123,7 +139,7 @@ export function Testimonials() {
             <div className="mx-auto mt-6 grid max-w-3xl gap-5 sm:grid-cols-2">
               {friends.map((testimonial, index) => (
                 <motion.figure
-                  key={testimonial.author}
+                  key={`${testimonial.author}-${index}`}
                   {...revealProps}
                   transition={cardTransition(index)}
                   className="flex flex-col rounded-2xl border border-sky/15 bg-white/70 p-6 text-left backdrop-blur-sm"
