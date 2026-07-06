@@ -1,52 +1,50 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { Images } from 'lucide-react'
 import { Divider } from '@/components/ui/Divider'
 import { Lightbox } from '@/components/ui/Lightbox'
+import { Button } from '@/components/ui/Button'
 import { siteContent } from '@/content/site-content'
 
 export function Gallery() {
   const { heading, photos } = siteContent.gallery
-  const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const [open, setOpen] = useState(false)
 
   if (photos.length === 0) return null
 
+  const coverPhoto = photos[0]
+
   return (
-    <section className="relative overflow-hidden bg-white px-6 py-24">
-      <div className="mx-auto max-w-5xl text-center">
-        <span className="text-xs tracking-[0.3em] text-sky-deep uppercase">Galerie</span>
-        <h2 className="mt-3 font-serif text-4xl font-medium text-ink sm:text-5xl">{heading}</h2>
-        <Divider />
-
-        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {photos.map((photo, index) => (
-            <motion.button
-              key={photo.src}
-              type="button"
-              onClick={() => setOpenIndex(index)}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              whileHover={{ scale: 1.03 }}
-              transition={{ duration: 0.4, delay: index * 0.05, ease: 'easeOut' }}
-              className="group aspect-[4/5] cursor-pointer overflow-hidden rounded-2xl border border-sky/20 shadow-[0_10px_25px_-12px_rgba(2,132,199,0.4)]"
-            >
-              <img
-                src={photo.src}
-                alt={photo.alt}
-                loading="lazy"
-                className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-            </motion.button>
-          ))}
-        </div>
-      </div>
-
-      <Lightbox
-        photos={photos}
-        index={openIndex}
-        onClose={() => setOpenIndex(null)}
-        onChangeIndex={setOpenIndex}
+    <section className="relative overflow-hidden px-6 py-24 text-center">
+      {/* fond flouté */}
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${coverPhoto.src})`, filter: 'blur(18px)', transform: 'scale(1.15)' }}
       />
+      <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/60 to-ink/70" />
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.6 }}
+        className="relative mx-auto max-w-lg"
+      >
+        <span className="text-xs tracking-[0.3em] text-sky uppercase">Galerie</span>
+        <h2 className="mt-3 font-serif text-4xl font-medium text-white sm:text-5xl">{heading}</h2>
+        <Divider />
+        <p className="mt-6 text-white/80">
+          {photos.length} photo{photos.length > 1 ? 's' : ''} en souvenir d'elle.
+        </p>
+
+        <Button type="button" onClick={() => setOpen(true)} className="mt-8 mx-auto">
+          <Images className="size-4" aria-hidden />
+          Voir les photos
+        </Button>
+      </motion.div>
+
+      <Lightbox photos={photos} open={open} onClose={() => setOpen(false)} autoPlay />
     </section>
   )
 }

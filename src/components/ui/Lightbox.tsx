@@ -1,28 +1,44 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react'
 
 type LightboxProps = {
   photos: { src: string; alt: string }[]
-  index: number | null
+  open: boolean
   onClose: () => void
-  onChangeIndex: (index: number) => void
+  /** Défile automatiquement à travers toutes les photos. */
+  autoPlay?: boolean
+  /** Durée d'affichage de chaque photo en ms. */
+  intervalMs?: number
 }
 
-export function Lightbox({ photos, index, onClose, onChangeIndex }: LightboxProps) {
-  const open = index !== null
-  const current = open ? photos[index] : null
+export function Lightbox({ photos, open, onClose, autoPlay = false, intervalMs = 3500 }: LightboxProps) {
+  const [index, setIndex] = useState(0)
+  const [playing, setPlaying] = useState(autoPlay)
 
   const goPrev = useCallback(() => {
-    if (index === null) return
-    onChangeIndex((index - 1 + photos.length) % photos.length)
-  }, [index, photos.length, onChangeIndex])
+    setIndex((current) => (current - 1 + photos.length) % photos.length)
+  }, [photos.length])
 
   const goNext = useCallback(() => {
-    if (index === null) return
-    onChangeIndex((index + 1) % photos.length)
-  }, [index, photos.length, onChangeIndex])
+    setIndex((current) => (current + 1) % photos.length)
+  }, [photos.length])
+
+  // Réinitialise à l'ouverture.
+  useEffect(() => {
+    if (open) {
+      setIndex(0)
+      setPlaying(autoPlay)
+    }
+  }, [open, autoPlay])
+
+  // Défilement automatique.
+  useEffect(() => {
+    if (!open || !playing || photos.length <= 1) return
+    const timer = setInterval(goNext, intervalMs)
+    return () => clearInterval(timer)
+  }, [open, playing, photos.length, intervalMs, goNext])
 
   useEffect(() => {
     if (!open) return
@@ -40,11 +56,13 @@ export function Lightbox({ photos, index, onClose, onChangeIndex }: LightboxProp
     }
   }, [open, onClose, goPrev, goNext])
 
+  const current = photos[index]
+
   return createPortal(
     <AnimatePresence>
       {open && current && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-ink/80 px-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-ink/85 px-4 backdrop-blur-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -83,22 +101,36 @@ export function Lightbox({ photos, index, onClose, onChangeIndex }: LightboxProp
             </>
           )}
 
-          <motion.img
-            key={current.src}
-            src={current.src}
-            alt={current.alt}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.97 }}
-            transition={{ duration: 0.2 }}
-            className="max-h-[85vh] max-w-full rounded-2xl object-contain shadow-2xl"
-          />
+          <AnimatePresence mode="popLayout">
+            <motion.img
+              key={current.src}
+              src={current.src}
+              alt={current.alt}
+              initial={{ opacity: 0, scale: 1.02 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.5, ease: 'easeInOut' }}
+              className="max-h-[80vh] max-w-full rounded-2xl object-contain shadow-2xl"
+            />
+          </AnimatePresence>
 
-          {photos.length > 1 && (
-            <span className="absolute bottom-6 rounded-full bg-white/10 px-4 py-1 text-sm text-white">
-              {index !== null ? index + 1 : 0} / {photos.length}
-            </span>
-          )}
+          <div className="absolute bottom-6 flex items-center gap-3">
+            {photos.length > 1 && (
+              <button
+                type="button"
+                onClick={() => setPlaying((p) => !p)}
+                aria-label={playing ? 'Mettre en pause' : 'Lancer le défilement'}
+                className="flex size-9 cursor-pointer items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+              >
+                {playing ? <Pause className="size-4" aria-hidden /> : <Play className="size-4" aria-hidden />}
+              </button>
+            )}
+            {photos.length > 1 && (
+              <span className="rounded-full bg-white/10 px-4 py-1 text-sm text-white">
+                {index + 1} / {photos.length}
+              </span>
+            )}
+          </div>
         </motion.div>
       )}
     </AnimatePresence>,
