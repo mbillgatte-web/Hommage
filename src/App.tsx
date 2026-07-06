@@ -20,6 +20,17 @@ function App() {
         <p className="font-serif text-sm italic text-ink-soft/70">
           En mémoire de Mama MAVOO ODETTE — avec amour, sa famille
         </p>
+        <p className="mt-4 text-xs text-ink-soft/50">
+          © {new Date().getFullYear()} — Réalisé par{' '}
+          <a
+            href="https://agi-conseil.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-2 hover:text-sky-deep"
+          >
+            agi-conseil.com
+          </a>
+        </p>
       </footer>
     </main>
   )
