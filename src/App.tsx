@@ -1,5 +1,6 @@
 import { Hero } from '@/components/sections/Hero'
 import { Biography } from '@/components/sections/Biography'
+import { Gallery } from '@/components/sections/Gallery'
 import { Testimonials } from '@/components/sections/Testimonials'
 import { Countdown } from '@/components/sections/Countdown'
 import { RsvpForm } from '@/components/sections/RsvpForm'
@@ -10,6 +11,7 @@ function App() {
     <main>
       <Hero />
       <Biography />
+      <Gallery />
       <Testimonials />
       <Countdown />
       <RsvpForm />

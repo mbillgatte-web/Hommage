@@ -14,6 +14,20 @@ export const siteContent = {
       "Un second paragraphe pourra évoquer son rôle au sein de la famille, sa foi, sa générosité, et l'héritage qu'elle laisse à ceux qui l'ont connue.",
     ],
   },
+  // Le nombre de photos peut varier librement — ajoutez/retirez simplement
+  // des entrées ici, la galerie s'adapte automatiquement.
+  gallery: {
+    heading: 'Ses souvenirs en images',
+    photos: [
+      { src: '/images/gallery/photo-1.svg', alt: 'Photo de Mama Odette 1' },
+      { src: '/images/gallery/photo-2.svg', alt: 'Photo de Mama Odette 2' },
+      { src: '/images/gallery/photo-3.svg', alt: 'Photo de Mama Odette 3' },
+      { src: '/images/gallery/photo-4.svg', alt: 'Photo de Mama Odette 4' },
+      { src: '/images/gallery/photo-5.svg', alt: 'Photo de Mama Odette 5' },
+      { src: '/images/gallery/photo-6.svg', alt: 'Photo de Mama Odette 6' },
+      { src: '/images/gallery/photo-7.svg', alt: 'Photo de Mama Odette 7' },
+    ] as { src: string; alt: string }[],
+  },
   // type 'family' (fils / petits-fils) : affiche la photo avec le message.
   // type 'friend' (amis) : affiche seulement le message.
   // Les vrais témoignages soumis via le site s'ajoutent automatiquement ici
