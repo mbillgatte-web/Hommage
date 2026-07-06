@@ -2,7 +2,7 @@ export const siteContent = {
   hero: {
     fullName: 'Mama MAVOO ODETTE',
     initials: 'MO',
-    photoSrc: null as string | null, // ex: "/images/mama-odette-portrait.jpg" — à ajouter plus tard
+    photoSrc: '/images/gallery/photo-4.jpg' as string | null,
     birthYear: '1940',
     deathYear: '2021',
     tagline: "Une vie de courage, d'amour et de foi",
