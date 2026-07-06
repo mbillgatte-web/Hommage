@@ -16,46 +16,15 @@ export const siteContent = {
   },
   // type 'family' (fils / petits-fils) : affiche la photo avec le message.
   // type 'friend' (amis) : affiche seulement le message.
-  testimonials: [
-    {
-      type: 'family',
-      author: 'Un fils',
-      relation: 'Fils',
-      photoSrc: '/images/testimonials/portrait-1.svg',
-      quote:
-        'Témoignage à venir — un hommage à la mère et au pilier de notre grande famille.',
-    },
-    {
-      type: 'family',
-      author: 'Un petit-fils',
-      relation: 'Petit-fils',
-      photoSrc: '/images/testimonials/portrait-2.svg',
-      quote:
-        "Témoignage à venir — un souvenir, une leçon de vie, un mot d'amour pour Mama Odette.",
-    },
-    {
-      type: 'family',
-      author: 'Une petite-fille',
-      relation: 'Petite-fille',
-      photoSrc: '/images/testimonials/portrait-3.svg',
-      quote: 'Témoignage à venir — ce que sa présence représentait au quotidien.',
-    },
-    {
-      type: 'friend',
-      author: 'Un ami de la famille',
-      relation: 'Ami',
-      photoSrc: null,
-      quote:
-        "Témoignage à venir — quelques mots d'un proche qui a connu et aimé Mama Odette.",
-    },
-    {
-      type: 'friend',
-      author: 'Une amie',
-      relation: 'Amie',
-      photoSrc: null,
-      quote: 'Témoignage à venir — un souvenir partagé avec la famille.',
-    },
-  ],
+  // Les vrais témoignages soumis via le site s'ajoutent automatiquement ici
+  // au-dessus (voir Testimonials.tsx / fetchLiveTestimonials).
+  testimonials: [] as {
+    type: 'family' | 'friend'
+    author: string
+    relation: string
+    photoSrc: string | null
+    quote: string
+  }[],
   event: {
     date: '2026-10-31T11:00:00',
     dateLabel: '31 octobre 2026',
