@@ -89,7 +89,7 @@ export function Hero() {
             animate={{ rotate: 360 }}
             transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
           />
-          <div className="relative flex size-44 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-gradient-to-b from-cloud to-white shadow-[0_20px_50px_-15px_rgba(2,132,199,0.45)] sm:size-52">
+          <div className="relative flex size-60 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-gradient-to-b from-cloud to-white shadow-[0_20px_55px_-12px_rgba(2,132,199,0.55)] sm:size-64 md:size-72">
             {photoSrc ? (
               <img src={photoSrc} alt={fullName} className="size-full rounded-full object-cover" />
             ) : (
@@ -119,7 +119,7 @@ export function Hero() {
 
       {/* colombes visibles aussi sur mobile (au-dessus du portrait) */}
       {mounted && (
-        <div className="pointer-events-none absolute top-[18%] z-10 flex w-full justify-center gap-24 sm:hidden">
+        <div className="pointer-events-none absolute top-[14%] z-10 flex w-full justify-between px-6 sm:hidden">
           <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}>
             <DoveSvg size={52} flapDuration={0.55} />
           </motion.div>
