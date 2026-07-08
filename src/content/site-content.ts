@@ -52,16 +52,9 @@ export const siteContent = {
   programme: {
     heading: 'Le deuil de nos parents',
     announcement: [
-      "Avec cette mélodie, je viens ce matin vous annoncer le deuil de nos parents, prévu au mois d'octobre, du 14 au 17.",
-      'Nous avons déjà pleuré, tous ceux qui devaient pleurer nos parents.',
-      "Nos parents ont laissé leurs beaux de Bamendjou, à qui ils ont tout donné de leur vivant. Leurs beaux non plus n'ont pas eu l'occasion de témoigner cet amour à travers les multiples danses qu'ils auraient bien voulu offrir, pour célébrer l'amour qui a existé entre les deux familles.",
-      'Nos parents ont laissé Ma Sessa et Deh Tagabon vivants.',
-      'Nos parents ont laissé Ma Ali de Bapi vivante.',
-      'Nos parents ont laissé la famille Tiam encore bien solide — gloire à Dieu, ils sont encore vivants.',
-      'Nos parents ont laissé le papa de notre beau Lambert vivant — gloire à Dieu, sa maman est encore là.',
-      'Nos parents ont laissé Ma Emis de Tonton Baillard et Papa Piano vivants, etc.',
-      'Nous avons accompagné plusieurs personnes pour célébrer leurs parents.',
-      "Ce 4 mai, jour du mois de départ de notre maman, nous avons décidé — et nous vous supplions de nous rejoindre — pour qu'ensemble, du 14 au 17 octobre, nous montrions aux yeux des hommes et des femmes que Papa Kamdem Jean et Maman Mavoo Odette ont eux aussi eu une progéniture, et que cette progéniture n'a pas oublié leur existence.",
+      "Avec cette mélodie, nous venons vous annoncer le deuil de nos parents, prévu du 14 au 17 octobre. Nous avons déjà beaucoup pleuré — tous ceux qui devaient pleurer nos parents.",
+      "Nos parents laissent derrière eux de nombreuses familles alliées de Bamendjou, à qui ils ont tout donné de leur vivant, sans avoir eu l'occasion de leur témoigner cet amour à travers la danse : Ma Sessa et Deh Tagabon, Ma Ali de Bapi, la famille Tiam, le papa de notre beau Lambert, Ma Emis de Tonton Baillard et Papa Piano, entre autres — gloire à Dieu, ils sont encore vivants.",
+      "Ce 4 mai, jour du départ de notre maman, nous avons décidé — et nous vous supplions de nous rejoindre — pour qu'ensemble, du 14 au 17 octobre, nous montrions que Papa Kamdem Jean et Maman Mavoo Odette ont eux aussi eu une progéniture qui n'a pas oublié leur existence.",
     ] as string[],
     days: [
       {

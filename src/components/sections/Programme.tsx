@@ -1,72 +1,121 @@
 import { motion } from 'framer-motion'
-import { Clock } from 'lucide-react'
 import { SectionReveal } from '@/components/ui/SectionReveal'
 import { Divider } from '@/components/ui/Divider'
+import { cn } from '@/lib/cn'
 import { siteContent } from '@/content/site-content'
+
+type ProgrammeItem = string | { time: string; label: string }
+type ProgrammeDay = { date: string; title: string; items: ProgrammeItem[] }
+
+function TimelineCard({ day, side }: { day: ProgrammeDay; side: 'start' | 'end' }) {
+  return (
+    <div
+      className={cn(
+        'rounded-2xl border border-sky/15 bg-white/90 p-5 shadow-[0_8px_24px_-16px_rgba(2,132,199,0.35)] sm:p-6',
+        side === 'start' ? 'sm:text-right' : 'sm:text-left',
+      )}
+    >
+      <p className="text-xs font-medium tracking-[0.2em] text-sky-deep uppercase">{day.date}</p>
+      <h3 className="mt-1 font-serif text-xl text-ink sm:text-2xl">{day.title}</h3>
+      <ul className={cn('mt-3 flex flex-col gap-2', side === 'start' && 'sm:items-end')}>
+        {day.items.map((item, index) => (
+          <li key={index} className="text-sm text-ink-soft sm:text-base">
+            {typeof item === 'string' ? (
+              item
+            ) : (
+              <>
+                <span className="font-medium text-sky-deep">{item.time}</span>
+                {' — '}
+                {item.label}
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+const dotVariants = {
+  hidden: { scale: 0 },
+  visible: { scale: 1, transition: { duration: 0.4, ease: 'easeOut' as const } },
+}
+
+const cardVariants = {
+  hidden: (x: number) => ({ opacity: 0, x }),
+  visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: 'easeOut' as const } },
+}
+
+function TimelineRow({ day, index }: { day: ProgrammeDay; index: number }) {
+  const isEven = index % 2 === 0
+
+  return (
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: '-80px' }}
+      className="relative grid grid-cols-[32px_1fr] items-start gap-x-4 sm:grid-cols-[1fr_32px_1fr] sm:gap-x-8"
+    >
+      <div className="hidden sm:block">
+        {isEven && (
+          <motion.div variants={cardVariants} custom={-32}>
+            <TimelineCard day={day} side="start" />
+          </motion.div>
+        )}
+      </div>
+
+      <div className="flex justify-center pt-1">
+        <motion.span
+          variants={dotVariants}
+          className="z-10 flex size-4 items-center justify-center rounded-full bg-sky-deep ring-4 ring-white"
+          aria-hidden
+        />
+      </div>
+
+      <div>
+        <div className="sm:hidden">
+          <motion.div variants={cardVariants} custom={24}>
+            <TimelineCard day={day} side="end" />
+          </motion.div>
+        </div>
+        <div className="hidden sm:block">
+          {!isEven && (
+            <motion.div variants={cardVariants} custom={32}>
+              <TimelineCard day={day} side="end" />
+            </motion.div>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  )
+}
 
 export function Programme() {
   const { heading, announcement, days } = siteContent.programme
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-white to-cloud px-6 py-24">
-      <SectionReveal className="relative mx-auto max-w-3xl text-center">
+      <SectionReveal className="relative mx-auto max-w-2xl text-center">
         <span className="text-xs tracking-[0.3em] text-sky-deep uppercase">Annonce</span>
         <h2 className="mt-3 font-serif text-4xl font-medium text-ink sm:text-5xl">{heading}</h2>
         <Divider />
-      </SectionReveal>
-
-      <SectionReveal className="relative mx-auto mt-10 max-w-2xl rounded-3xl border border-sky/20 bg-white/80 p-8 text-left shadow-[0_14px_35px_-15px_rgba(2,132,199,0.3)] backdrop-blur-sm sm:p-10">
-        <div className="space-y-5 font-serif text-base italic leading-relaxed text-ink sm:text-lg">
+        <div className="mt-8 space-y-4 text-left font-serif text-base italic leading-relaxed text-ink-soft sm:text-lg">
           {announcement.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}
         </div>
       </SectionReveal>
 
-      <div className="relative mx-auto mt-14 max-w-3xl space-y-6">
-        {days.map((day, index) => (
-          <motion.div
-            key={day.date}
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.55, delay: index * 0.08, ease: 'easeOut' }}
-            className="overflow-hidden rounded-2xl border border-sky/20 bg-white shadow-[0_10px_30px_-18px_rgba(2,132,199,0.35)]"
-          >
-            <div className="flex flex-wrap items-center gap-3 bg-sky-deep px-6 py-4">
-              <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-medium tracking-wide text-white uppercase">
-                {day.date}
-              </span>
-              <h3 className="font-serif text-lg text-white sm:text-xl">{day.title}</h3>
-            </div>
-            <ul className="space-y-3 px-6 py-5">
-              {day.items.map((item, itemIndex) => (
-                <li
-                  key={itemIndex}
-                  className="flex items-start gap-3 text-sm text-ink-soft sm:text-base"
-                >
-                  {typeof item === 'string' ? (
-                    <>
-                      <span
-                        aria-hidden
-                        className="mt-2 size-1.5 shrink-0 rounded-full bg-sky-deep/60"
-                      />
-                      <span>{item}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="mt-0.5 flex shrink-0 items-center gap-1 rounded-full bg-sky/15 px-2.5 py-0.5 text-xs font-medium text-sky-deep">
-                        <Clock className="size-3" aria-hidden />
-                        {item.time}
-                      </span>
-                      <span>{item.label}</span>
-                    </>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-        ))}
+      <div className="relative mx-auto mt-16 max-w-4xl">
+        <div
+          aria-hidden
+          className="absolute top-0 bottom-0 left-4 w-px bg-gradient-to-b from-sky/5 via-sky/40 to-sky/5 sm:left-1/2 sm:-translate-x-1/2"
+        />
+        <div className="space-y-10 sm:space-y-14">
+          {days.map((day, index) => (
+            <TimelineRow key={day.date} day={day} index={index} />
+          ))}
+        </div>
       </div>
     </section>
   )
